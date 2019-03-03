@@ -8,6 +8,7 @@ output: html_document
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(Matching)
 ```
 
 ## Step 1:Data
@@ -25,6 +26,28 @@ propensity_model <- glm(qsmk ~ as.factor(sex)+as.factor(race) + age + as.factor(
 summary(propensity_model)
 ```
 
+Now that we have the logistic regression model created. We are going to estimate the propensity score for each subject in the data. 
+```{r}
+# Make predictions with the logistic model:
+predictions <- predict.glm(propensity_model, smoking_data, type = 'response')
+# Create new column in the smoking data:
+smoking_data$propensity <- predictions 
+```
+
+Now that we have the estimated propensity scores for each subject we can go ahead and perform matching.
+```{r}
+library(Matching)
+#Perform Matching
+x <- smoking_data$propensity
+t <- smoking_data$qsmk
+y <- smoking_data$wt82_71
+rr <- Match(Y = y, Tr = t, X = x, M = 1)
+summary(rr)
+#Check covariate balance:
+matching <- MatchBalance(qsmk ~ as.factor(sex)+as.factor(race) + age + as.factor(education.code) + smokeintensity + smokeyrs + as.factor(exercise)+ as.factor(active) + wt71 ,match.out = rr,data = smoking_data, nboots = 500)
+```
+
+As we can see the after matching the covariates are a lot more balanced than they were before. Now we need to find the average absolute mean standardized difference.
 
 ```{r}
 
