@@ -49,6 +49,27 @@ matching <- MatchBalance(qsmk ~ as.factor(sex)+as.factor(race) + age + as.factor
 
 As we can see the after matching the covariates are a lot more balanced than they were before. Now we need to find the average absolute mean standardized difference.
 
-```{r}
+There doesn't seem to be a good method to extract the standardized mean difference from the matching function. Therefore, we are going to have to do it manually. 
 
+```{r}
+#Check the total aboslute std mean difference before matching:
+before_aasmd <- (abs(-16.022) + abs(-19.905) + abs(27.714) + abs(-11.633) + abs(-4.7408) + abs(-2.7616)  + abs(15.215) + abs(-20.874) +  abs(15.26) + abs(3.9669) + abs(5.6429) + abs(2.6753) + abs(7.0522) + abs(13.13))/14
+
+# Check the total absolute std mean difference after matching:
+prop_log_total_aasmd <- (abs(.15703) + abs(2.0202) + abs(-3.4504) + abs(-4.4403) + abs(1.7703) + abs(-2.7652) + abs(.56014) + abs(-1.3479) + abs(-3.176) + abs(-4.8493) + abs(7.7689) + abs(-.38737) + abs(4.4974) + abs(-1.3303))/14
+```
+Now let's compare the average absolute std mean difference in covariates before matching to after matching:
+```{r}
+#Before Matching:
+print(before_aasmd)
+#After Matching:
+print(prop_log_total_aasmd)
+```
+Let's visualize the results in a barchart:
+```{r}
+#Create dataframe to visualize:
+aasmd_prop <- data.frame("Type" = c("Before Matching", "After Matching"), "Value" = c(before_aasmd, prop_log_total_aasmd))
+library(ggplot2)
+aasmd_prop_plot <- ggplot(aasmd_prop, aes(Type, Value)) + geom_bar(stat = "identity")
+aasmd_prop_plot
 ```
