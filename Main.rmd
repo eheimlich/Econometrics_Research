@@ -19,7 +19,7 @@ smoking_data <- read.csv('nhefshw2dat.csv')
 
 ## Step 2: Propensity Scoring 
 
-### Step 2.1: Propensity Scoring with Logistic Regression
+### Step 2.1: Estimating Propensity Scoring with Logistic Regression
 ```{r}
 propensity_model <- glm(qsmk ~ as.factor(sex)+as.factor(race) + age + as.factor(education.code) + smokeintensity + smokeyrs + as.factor(exercise)+ as.factor(active) + wt71, family = binomial() ,data = smoking_data)
 
@@ -33,6 +33,8 @@ predictions <- predict.glm(propensity_model, smoking_data, type = 'response')
 # Create new column in the smoking data:
 smoking_data$propensity <- predictions 
 ```
+
+### Step 2.2 Matching Based On Propensity Scores
 
 Now that we have the estimated propensity scores for each subject we can go ahead and perform matching.
 ```{r}
@@ -70,6 +72,15 @@ Let's visualize the results in a barchart:
 #Create dataframe to visualize:
 aasmd_prop <- data.frame("Type" = c("Before Matching", "After Matching"), "Value" = c(before_aasmd, prop_log_total_aasmd))
 library(ggplot2)
-aasmd_prop_plot <- ggplot(aasmd_prop, aes(Type, Value)) + geom_bar(stat = "identity")
+aasmd_prop_plot <- ggplot(aasmd_prop, aes(Type, Value, fill = Type)) + geom_bar(stat = "identity") + ylab("Average Absolute Standardized Mean Difference") + xlab("Before vs After Matching") 
+
+
 aasmd_prop_plot
 ```
+
+
+## Step 3: Unsupervised Learning
+
+### Step 3.1: Partitions Around Mediods(PAM) Clustering
+
+
