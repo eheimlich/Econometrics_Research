@@ -84,3 +84,19 @@ aasmd_prop_plot
 ### Step 3.1: Partitions Around Mediods(PAM) Clustering
 
 
+First we need to remove columns before calculating dissimilarity: propensity, X, seqn.
+
+```{r}
+library(dplyr)
+diss_data <- smoking_data %>%
+  select(sex, race, age, education.code, smokeintensity, smokeyrs, exercise, active, wt71)
+```
+
+```{r}
+library(cluster)
+gower_dist <- daisy(diss_data, metric = 'gower', type = list(factor = c(1, 2)))
+
+gower_matrix <- as.matrix(gower_dist)
+```
+
+

@@ -385,7 +385,7 @@ matching &lt;- MatchBalance(qsmk ~ as.factor(sex)+as.factor(race) + age + as.fac
 ## 
 ## var ratio (Tr/Co).....     1.1846             1.1132 
 ## T-test p-value........  0.0072293            0.61403 
-## KS Bootstrap p-value..      0.008              0.106 
+## KS Bootstrap p-value..      0.002              0.106 
 ## KS Naive p-value......   0.018385            0.15182 
 ## KS Statistic..........   0.088511           0.050545 
 ## 
@@ -478,7 +478,7 @@ matching &lt;- MatchBalance(qsmk ~ as.factor(sex)+as.factor(race) + age + as.fac
 ## 
 ## var ratio (Tr/Co).....     1.0606             1.0282 
 ## T-test p-value........   0.022421            0.84279 
-## KS Bootstrap p-value..       0.08              0.002 
+## KS Bootstrap p-value..      0.096              0.002 
 ## KS Naive p-value......    0.10646          0.0041188 
 ## KS Statistic..........       0.07           0.078295 
 ## 
@@ -515,6 +515,29 @@ aasmd_prop_plot</code></pre>
 </div>
 <div id="step-3-unsupervised-learning" class="section level2">
 <h2>Step 3: Unsupervised Learning</h2>
+<div id="step-3.1-partitions-around-mediodspam-clustering" class="section level3">
+<h3>Step 3.1: Partitions Around Mediods(PAM) Clustering</h3>
+<p>First we need to remove columns before calculating dissimilarity: propensity, X, seqn.</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following object is masked from 'package:MASS':
+## 
+##     select</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>diss_data &lt;- smoking_data %&gt;%
+  select(sex, race, age, education.code, smokeintensity, smokeyrs, exercise, active, wt71)</code></pre>
+<pre class="r"><code>library(cluster)
+gower_dist &lt;- daisy(diss_data, metric = 'gower', type = list(factor = c(1, 2)))</code></pre>
+<pre><code>## Warning in daisy(diss_data, metric = &quot;gower&quot;, type = list(factor = c(1, :
+## binary variable(s) 1, 2 treated as interval scaled</code></pre>
+<pre class="r"><code>gower_matrix &lt;- as.matrix(gower_dist)</code></pre>
+</div>
 </div>
 
 
