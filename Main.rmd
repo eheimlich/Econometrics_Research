@@ -101,7 +101,7 @@ gower_dist <- daisy(diss_data, metric = 'gower', type = list(factor = c(1, 2)))
 gower_mat <- as.matrix(gower_dist)
 
 #Run PAM Clustering
-pam_fit <- pam(gower_dist, diss = TRUE, k = 10)
+pam_fit <- pam(gower_dist, diss = TRUE, k = 50)
 
 #Add cluster assignment column to the diss_data set.
 diss_data$cluster<- pam_fit$clustering
@@ -114,10 +114,11 @@ diss_data$assignment <- smoking_data$qsmk
 
 ```{r}
 library(Matching)
+library(dplyr)
 
 
 cluss_1 <- diss_data %>%
-  filter(cluster == 1)
+  filter(cluster == 3)
   
 
 MatchBalance(assignment ~ sex +as.factor(race) + age + as.factor(education.code) + smokeintensity + smokeyrs + as.factor(exercise)+ active + wt71, data = cluss_1, nboots = 500)
@@ -125,3 +126,104 @@ MatchBalance(assignment ~ sex +as.factor(race) + age + as.factor(education.code)
 
 summary(cluss_1)
 ```
+
+
+
+
+### Step 4: Dataset Simulations:
+
+Created the dataset
+```{r}
+library(dplyr)
+
+t_1 <- rnorm(100 ,mean = 100, sd = 10) #Higher
+t_2 <- rnorm(100 ,mean = 100, sd = 10) #Lower 
+t_3 <- rnorm(100 ,mean = 100, sd = 10)
+t_4 <- rnorm(100 ,mean = 100, sd = 10)
+t_5 <- rnorm(100 ,mean = 100, sd = 10)
+t_assignment<- rep(1, 100)
+
+c_1 <- rnorm(100 ,mean =90, sd = 10)
+c_2 <- rnorm(100 ,mean = 90, sd = 10)
+c_3 <- rnorm(100 ,mean = 90, sd = 10)
+c_4 <- rnorm(100 ,mean = 90, sd = 10)
+c_5 <- rnorm(100 ,mean = 90, sd = 10)
+c_assignment <- rep(0,100)
+
+
+data_t <- data.frame("X1" = t_1, "X2" = t_2, "X3" = t_3, "X4" = t_4, "X5" = t_5, "Assignment" = t_assignment )
+data_c <- data.frame("X1" = c_1, "X2" = c_2, "X3" = c_3, "X4" = c_4, "X5" = c_5, "Assignment"= c_assignment)
+
+data_combined <- bind_rows(data_t, data_c)
+```
+
+Check imbalance
+
+```{r}
+library(Matching)
+
+MatchBalance(Assignment ~ X1 + X2 + X3 + X4 + X5 ,data = data_combined)
+
+```
+
+Propensity Score Generations
+```{r}
+# Create Model
+propensity_model_1 <- glm(Assignment ~ X1 + X2 + X3 + X4 + X5, family = binomial() , data = data_combined)
+
+# Predict on the data:
+predictions_1 <- predict.glm(propensity_model_1, data_combined, type = 'response')
+
+# Add propensity score column to the dataset:
+data_combined$Propensity_score <- signif(predictions_1,4)
+
+```
+
+Matching based on propensity scores:
+
+```{r}
+#Perform Matching
+x_1 <- data_combined$Propensity_score
+t_1 <- data_combined$Assignment
+rr_1 <- Match(Tr = t, X = x, M = 1)
+
+# Check covariate balance:
+matching_1 <- MatchBalance(Assignment ~ X1 + X2 + X3 + X4 + X5 ,match.out = rr_1 ,data = data_combined, nboots = 500)
+
+```
+
+Clustering: 
+
+```{r}
+detach("package:dplyr", character.only = TRUE)
+library("dplyr", character.only = TRUE)
+
+# Subset the data to only the columns we want to cluster on:
+clustering_data_1<- data_combined %>% 
+  select(X1, X2, X3, X4, X5) 
+ 
+# Run the clustering:
+k = 4
+clustering_1 <- kmeans(clustering_data_1, centers = k, nstart = 25)
+
+# Assign the cluster to each observation:
+data_combined$cluster <- clustering_1$cluster
+```
+
+
+```{r}
+a <- data_combined %>%
+  filter(cluster == 2) %>%
+  select(X1, X2, X3, X4, X5, Assignment)
+  MatchBalance(Assignment ~ X1 + X2 + X3 + X4 + X5 ,data = a, nboots =500)
+  
+  
+for(i in k){
+  data_combined %>% 
+    filter(cluster == i) %>%
+    select(X1, X2, X3, X4, X5)
+    
+} 
+
+```
+
