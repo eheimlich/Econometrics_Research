@@ -6,12 +6,12 @@ library(clue)
 compare_hungtoprop <- function(n_treat, mu_treat, sd_treat, mu_control, sd_control, percentile) {   
     
   
-    # n_treat <- 60
-    # mu_treat <- 100
-    # sd_treat <- 10
-    # mu_control <- 90
-    # sd_control <- 10
-    # percentile <- .5
+     # n_treat <- 4
+     # mu_treat <- 100
+     # sd_treat <- 10
+     # mu_control <- 90
+     # sd_control <- 10
+     # percentile <- .5
     percentile_cutoff <- as.integer(percentile * n_treat)
     
     t_1 <- rnorm(n_treat ,mean = mu_treat, sd = sd_treat) #Higher
@@ -164,13 +164,13 @@ compare_hungtoprop <- function(n_treat, mu_treat, sd_treat, mu_control, sd_contr
     
     
     #----------------------------------------Calculate original ASMD---------------------------------------------
-    # orig_smd_x1 <- 100 * abs((mean(t_1) - mean(c_1)) / (sqrt((var(t_1) + var(c_1))/2)))
-    # orig_smd_x2 <- 100 * abs((mean(t_2) - mean(c_2)) / (sqrt((var(t_2) + var(c_2))/2)))
-    # orig_smd_x3 <- 100 * abs((mean(t_3) - mean(c_3)) / (sqrt((var(t_3) + var(c_3))/2)))
-    # orig_smd_x4 <- 100 * abs((mean(t_4) - mean(c_4)) / (sqrt((var(t_4) + var(c_4))/2)))
-    # orig_smd_x5 <- 100 * abs((mean(t_5) - mean(c_5)) / (sqrt((var(t_5) + var(c_5))/2)))
+    orig_smd_x1 <- 100 * abs((mean(t_1) - mean(c_1)) / (sqrt((var(t_1) + var(c_1))/2)))
+    orig_smd_x2 <- 100 * abs((mean(t_2) - mean(c_2)) / (sqrt((var(t_2) + var(c_2))/2)))
+    orig_smd_x3 <- 100 * abs((mean(t_3) - mean(c_3)) / (sqrt((var(t_3) + var(c_3))/2)))
+    orig_smd_x4 <- 100 * abs((mean(t_4) - mean(c_4)) / (sqrt((var(t_4) + var(c_4))/2)))
+    orig_smd_x5 <- 100 * abs((mean(t_5) - mean(c_5)) / (sqrt((var(t_5) + var(c_5))/2)))
     # 
-    # orig_asmd <- mean(orig_smd_x1, orig_smd_x2, orig_smd_x3, orig_smd_x4, orig_smd_x5)
+    orig_asmd <- mean(orig_smd_x1, orig_smd_x2, orig_smd_x3, orig_smd_x4, orig_smd_x5)
     
     #--------------------------------------Compare hungarian to propensity
     # if(isTRUE(hung_asmd < propensity_asmd)){
@@ -178,11 +178,13 @@ compare_hungtoprop <- function(n_treat, mu_treat, sd_treat, mu_control, sd_contr
     # } else{
     #   return(0)
     # }
-    return(hung_asmd <= propensity_asmd)
     
+    return(propensity_asmd > hung_asmd) #< propensity_asmd)
+    #return(orig_asmd)
 }
+
 results <- c()
-for (i in 1:100){
-results <- c(compare_hungtoprop(6, 100, 10, 100, 10, .5), results)
+for (i in 1:1000){
+results <- c(compare_hungtoprop(100, 100, 10, 95, 10, .2), results)
 }
 sum(results)
