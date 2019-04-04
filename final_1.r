@@ -1,7 +1,11 @@
+#install.packages("DataCombine")
+
+library(DataCombine)
 library(MatchIt)
 library(dplyr)
 library(cluster)
 library(clue)
+
 
 compare_hungtoprop <- function(n_treat, mu_treat, sd_treat, mu_control, sd_control, percentile) {   
     
@@ -183,8 +187,23 @@ compare_hungtoprop <- function(n_treat, mu_treat, sd_treat, mu_control, sd_contr
     #return(orig_asmd)
 }
 
-results <- c()
-for (i in 1:1000){
-results <- c(compare_hungtoprop(100, 100, 10, 95, 10, .2), results)
+# Run this once!!!!!!!!!!!!!!!
+results_df <- data.frame("n_simulations" =c(0),"n_treat " = c(0), " mu_treat" = c(0), "sd_treat" = c(0), "mu_control" = c(0), "sd_control" = c(0), "percentile" = c(0), "Proportion_Wins" = c(0))
+
+run_simulations <- function(n_simulations, n_treat, mu_treat, sd_treat, mu_control, sd_control, percentile){
+  results <- c()
+  for (i in 1:n_simulations){
+    results <- c(compare_hungtoprop(n_treat, mu_treat, sd_treat, mu_control, sd_control, percentile), results)
+  }
+  simulation_results <- sum(results)
+  
+  added_data <- c(n_simulations, n_treat, mu_treat, sd_treat, mu_control, sd_control, percentile, (simulation_results/n_simulations))
+  
+  results_df <<- rbind(results_df, added_data)
+  #results_df <- InsertRow(results_df, NewRow = added_data)
+  
 }
-sum(results)
+
+
+
+
