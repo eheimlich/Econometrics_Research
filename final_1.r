@@ -1,6 +1,4 @@
-#install.packages("DataCombine")
 
-library(DataCombine)
 library(MatchIt)
 library(dplyr)
 library(cluster)
