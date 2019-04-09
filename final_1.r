@@ -1,7 +1,7 @@
-install.packages("MatchIt")
-install.packages("dplyr")
-install.packages("cluster")
-install.packages("clue")
+# install.packages("MatchIt")
+# install.packages("dplyr")
+# install.packages("cluster")
+# install.packages("clue")
 
 library(MatchIt)
 library(dplyr)
@@ -13,15 +13,7 @@ library(clue)
 
 compare_hungtoprop <- function(n_treat, mu_treat, sd_treat, mu_control, sd_control, proportion) {   
   
-  #----------------------------------------Calculate original ASMD---------------------------------------------
-  orig_smd_x1 <- 100 * abs((mean(t_1) - mean(c_1)) / (sqrt((var(t_1) + var(c_1))/2)))
-  orig_smd_x2 <- 100 * abs((mean(t_2) - mean(c_2)) / (sqrt((var(t_2) + var(c_2))/2)))
-  orig_smd_x3 <- 100 * abs((mean(t_3) - mean(c_3)) / (sqrt((var(t_3) + var(c_3))/2)))
-  orig_smd_x4 <- 100 * abs((mean(t_4) - mean(c_4)) / (sqrt((var(t_4) + var(c_4))/2)))
-  orig_smd_x5 <- 100 * abs((mean(t_5) - mean(c_5)) / (sqrt((var(t_5) + var(c_5))/2)))
-  
-  # Calcualte the original SMD before any matching is done: 
-  orig_asmd <- mean(orig_smd_x1, orig_smd_x2, orig_smd_x3, orig_smd_x4, orig_smd_x5)
+ 
   
   
   #--------------------Set Proportion Cutoff-----------------------
@@ -186,6 +178,16 @@ compare_hungtoprop <- function(n_treat, mu_treat, sd_treat, mu_control, sd_contr
   # Caluclate the average SMD across all 5 covariates:
   hung_asmd <- mean(hung_smd_x1, hung_smd_x2 , hung_smd_x3 , hung_smd_x4 ,hung_smd_x5)
   
+  #----------------------------------------Calculate original ASMD---------------------------------------------
+  orig_smd_x1 <- 100 * abs((mean(t_1) - mean(c_1)) / (sqrt((var(t_1) + var(c_1))/2)))
+  orig_smd_x2 <- 100 * abs((mean(t_2) - mean(c_2)) / (sqrt((var(t_2) + var(c_2))/2)))
+  orig_smd_x3 <- 100 * abs((mean(t_3) - mean(c_3)) / (sqrt((var(t_3) + var(c_3))/2)))
+  orig_smd_x4 <- 100 * abs((mean(t_4) - mean(c_4)) / (sqrt((var(t_4) + var(c_4))/2)))
+  orig_smd_x5 <- 100 * abs((mean(t_5) - mean(c_5)) / (sqrt((var(t_5) + var(c_5))/2)))
+  
+  # Calcualte the original SMD before any matching is done: 
+  orig_asmd <- mean(orig_smd_x1, orig_smd_x2, orig_smd_x3, orig_smd_x4, orig_smd_x5)
+  
   
   return(c(orig_asmd, propensity_asmd, hung_asmd, as.integer(hung_asmd < propensity_asmd)))
   
@@ -223,48 +225,49 @@ run_simulations <- function(n_simulations, n_treat, mu_treat, sd_treat, mu_contr
 
 #Running various simulations to test where the Hungarian Method achieves better results than propensity scores
 
-#------------------------WARNING THESE SIMULATIONS TAKE ON AVERAGE 8 HOURS. YOU CAN REDUCE THE TIME BY REPLACING THE VALUE 2000 WITH 100 FOR EACH RUN_SIMULATIONS COMMAND----------
+#------------------------WARNING THESE SIMULATIONS TAKE ON AVERAGE 8 HOURS. YOU CAN REDUCE THE TIME BY REPLACING THE VALUE 100 WITH 100 FOR EACH RUN_SIMULATIONS COMMAND----------
 
-run_simulations(2000,200,100, 25 , 95, 25,0.5) #Base simulation
+run_simulations(10,200,100, 25 , 95, 25,0.5) #Base simulation
 
-run_simulations(2000,200,100, 25 , 95, 25,0.6) #High proportion
+run_simulations(10,200,100, 25 , 95, 25,0.6) #High proportion
 
-run_simulations(2000,200,100, 30 , 95, 30,0.5) #standard deviation
+run_simulations(10,200,100, 30 , 95, 30,0.5) #standard deviation
 
-run_simulations(2000,200,100, 25 , 94, 25,0.5) #mean difference
+run_simulations(10,200,100, 25 , 94, 25,0.5) #mean difference
 
-run_simulations(2000,250,100, 25 , 95, 25,0.5) #sample size 
-
-
-run_simulations(2000,200,100, 25 , 95, 25,0.7) #Higherproportion
-
-run_simulations(2000,200,100, 35 , 95, 35,0.5) #standard deviation
-
-run_simulations(2000,200,100, 25 , 93, 25,0.5) #mean difference
-
-run_simulations(2000,300,100, 25 , 95, 25,0.5) #sample size 
+run_simulations(10,250,100, 25 , 95, 25,0.5) #sample size 
 
 
+run_simulations(10,200,100, 25 , 95, 25,0.7) #Higherproportion
 
-run_simulations(2000,200,100, 25 , 95, 25,0.4) #Low proportion
+run_simulations(10,200,100, 35 , 95, 35,0.5) #standard deviation
 
-run_simulations(2000,200,100, 20 , 95, 20,0.5) #standard deviation
+run_simulations(10,200,100, 25 , 93, 25,0.5) #mean difference
 
-run_simulations(2000,200,100, 25 , 96, 25,0.5) #mean difference
-
-run_simulations(2000,150,100, 25 , 95, 25,0.5) #sample size 
+run_simulations(10,300,100, 25 , 95, 25,0.5) #sample size 
 
 
 
+run_simulations(10,200,100, 25 , 95, 25,0.4) #Low proportion
 
-run_simulations(2000,200,100, 25 , 95, 25,0.3) #Lower proportion
+run_simulations(10,200,100, 20 , 95, 20,0.5) #standard deviation
 
-run_simulations(2000,200,100, 15 , 95, 15,0.5) #standard deviation
+run_simulations(10,200,100, 25 , 96, 25,0.5) #mean difference
 
-run_simulations(2000,200,100, 25 , 97, 25,0.5) #mean difference
+run_simulations(10,150,100, 25 , 95, 25,0.5) #sample size 
 
-run_simulations(2000,100,100, 25 , 95, 25,0.5) #sample size
+
+
+
+run_simulations(10,200,100, 25 , 95, 25,0.3) #Lower proportion
+
+run_simulations(10,200,100, 15 , 95, 15,0.5) #standard deviation
+
+run_simulations(10,200,100, 25 , 97, 25,0.5) #mean difference
+
+run_simulations(10,100,100, 25 , 95, 25,0.5) #sample size
 #Opening the Data-frame of results#
 View(results_df)
+
 
 
