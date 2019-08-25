@@ -20,7 +20,7 @@ from sklearn.cross_validation import train_test_split
 class RCT:
     
         
-    def __init__(self, n): 
+    def __init__(self, n: int) -> None: 
         self.n = n
         a = np.random.normal(100, 10, self.n)
         b = np.random.normal(100, 10, self.n)
